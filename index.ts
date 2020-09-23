@@ -21,6 +21,7 @@ const defaultInstance = new aws.rds.Instance('iac-pulumi', {
   username: 'foo',
 });
 
+// TO DO: buscar como el destroy de pulumi elimina la base de datos
 export const databaseName = defaultInstance.name;
 
 // Configure IAM so that the AWS Lambda can be run.
