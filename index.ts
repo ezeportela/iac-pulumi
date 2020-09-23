@@ -1,12 +1,27 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
 import * as awsx from '@pulumi/awsx';
+import * as postgresql from '@pulumi/postgresql';
 
 const config = new pulumi.Config();
 const bucketname = config.require('bucketname');
 
 // Create an AWS resource (S3 Bucket)
 const bucket = new aws.s3.Bucket(bucketname);
+
+const defaultInstance = new aws.rds.Instance('iac-pulumi', {
+  allocatedStorage: 20,
+  engine: 'postgres',
+  engineVersion: '12.3',
+  instanceClass: 'db.t2.micro',
+  name: 'iacPulumiPostgres',
+  parameterGroupName: 'default.postgres12',
+  password: 'foobarbaz',
+  storageType: 'gp2',
+  username: 'foo',
+});
+
+export const databaseName = defaultInstance.name;
 
 // Configure IAM so that the AWS Lambda can be run.
 const lambdaDataLoaderHandlerRole = new aws.iam.Role(
